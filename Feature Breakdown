@@ -1,0 +1,106 @@
+# LinoriaLib Example.lua – Feature Breakdown
+
+This script is a showcase of LinoriaLib's UI framework for Roblox, demonstrating how to build a feature-rich, customizable menu. Here’s a breakdown of the key components and features:
+
+## 1. **Library and Addons Initialization**
+- **Library**: Main UI framework.
+- **ThemeManager**: Handles UI themes.
+- **SaveManager**: Manages saving/loading menu configurations.
+
+## 2. **Window Creation**
+- Create a window with customizable options: title, centering, auto-show, tab padding, fade time.
+
+## 3. **Tabs & Groupboxes**
+- **Tabs**: Organizational sections for UI (`Main`, `UI Settings`).
+- **Groupbox**: Containers for related controls (e.g., toggles, buttons).
+
+## 4. **Toggles**
+- Add toggle switches with default value, tooltip, and callbacks.
+- Recommended: Use `:OnChanged` for logic binding.
+- Toggles can be referenced via the global `Toggles` table.
+
+## 5. **Buttons**
+- Add buttons with callback functions, tooltips, and optional double-click requirement.
+- Buttons can have chained sub-buttons.
+- Example: Main button and a sub-button requiring double-click.
+
+## 6. **Labels**
+- Simple and wrapped text labels to display information.
+
+## 7. **Dividers**
+- Visual separator for grouping related UI elements.
+
+## 8. **Sliders**
+- Numeric sliders with custom text, min/max/default, rounding, tooltips, compact mode, and hide-max.
+- Values and changes are tracked via the global `Options` table.
+
+## 9. **Inputs**
+- Textboxes with options for default text, numeric-only input, callback on enter, tooltips, placeholders, max length.
+
+## 10. **Dropdowns**
+- Single-select and multi-select dropdowns.
+- Player dropdown (`SpecialType = 'Player'`) for selecting players in-game.
+- Multi-dropdown values are returned as a table.
+
+## 11. **Color Pickers**
+- Attach a color picker to a label or toggle, with title, default color, and transparency support.
+
+## 12. **Key Pickers**
+- Keybind UI to bind actions to keys or mouse buttons.
+- Modes: Always, Toggle, Hold.
+- Sync state with toggles if desired.
+
+## 13. **UI Scrolling**
+- Long labels to demonstrate auto-scrolling when UI space is exceeded.
+
+## 14. **Tabboxes**
+- Tabbed containers inside a tab; each tab can have its own controls.
+
+## 15. **Dependency/Visibility Boxes**
+- Controls visibility of UI elements based on the state of other elements (e.g., feature toggles).
+- Supports nested dependency boxes for complex logic.
+
+## 16. **Watermark and FPS/Ping Display**
+- Custom dynamic watermark showing demo info, FPS, and ping.
+
+## 17. **Menu Keybind**
+- Custom keybind to open/close the menu, with hide-from-keybind-menu option.
+
+## 18. **ThemeManager Integration**
+- Set theme folder; apply themes to groups or tabs; built-in theme selection menu.
+
+## 19. **SaveManager Integration**
+- Ignore theme settings and specific indexes when saving config.
+- Set config folder for menu settings.
+- Build config selection menu in the UI.
+- Optionally auto-load a config.
+
+## 20. **Unload Functionality**
+- Button to unload/close the menu and clean up connections.
+
+---
+
+## How Features Interact
+
+- **Global Tables**: `Toggles` and `Options` allow you to reference and manipulate UI controls and their values from anywhere in your script.
+- **Callbacks**: Each control can trigger functions when changed, promoting a decoupled UI logic.
+- **Extensibility**: Addons (ThemeManager, SaveManager) integrate seamlessly for saving/loading and styling.
+- **Customization**: Everything from layout, control types, colors, and themes can be customized.
+
+---
+
+## Example UI Hierarchy
+
+- Window
+  - Tabs
+    - Groupboxes or Tabboxes
+      - Toggles, Buttons, Sliders, Inputs, Dropdowns, Color/Key Pickers
+      - Dependency Boxes (conditional visibility)
+    - Config/Theme Menus (via SaveManager/ThemeManager)
+  - Watermark (status display)
+  - Keybinds (menu control)
+
+---
+
+**Summary:**  
+This example demonstrates how LinoriaLib lets you build advanced, interactive, and modular UIs for Roblox scripts, with strong support for user customization, config management, and extensible UI logic.
