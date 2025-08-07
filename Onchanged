@@ -1,0 +1,126 @@
+# Using `:OnChanged` Instead of Callback in LinoriaLib
+
+LinoriaLib allows you to set up logic for UI elements in two ways:
+- **Via the `Callback` property** (when creating the element)
+- **Via the recommended `:OnChanged` method on the element object** (after creation)
+
+The recommended way is to **create your UI elements first, then attach logic using `:OnChanged`** for better separation of UI and functionality.
+
+---
+
+## Example for Toggle
+
+```lua
+LeftGroupBox:AddToggle('MyToggle', {
+    Text = 'Enable Feature',
+    Default = false
+    -- No Callback here!
+})
+
+-- Recommended: Attach logic with :OnChanged
+Toggles.MyToggle:OnChanged(function()
+    if Toggles.MyToggle.Value then
+        EnableFeature()
+    else
+        DisableFeature()
+    end
+end)
+```
+
+---
+
+## Example for Slider
+
+```lua
+LeftGroupBox:AddSlider('SpeedSlider', {
+    Text = 'Speed',
+    Default = 10,
+    Min = 1,
+    Max = 100,
+    Rounding = 0
+    -- No Callback here!
+})
+
+-- Attach logic with :OnChanged
+Options.SpeedSlider:OnChanged(function()
+    SetSpeed(Options.SpeedSlider.Value)
+end)
+```
+
+---
+
+## Example for Input (Textbox)
+
+```lua
+LeftGroupBox:AddInput('GreetingInput', {
+    Text = 'Enter greeting',
+    Default = 'Hello'
+    -- No Callback here!
+})
+
+Options.GreetingInput:OnChanged(function()
+    print('Greeting changed to:', Options.GreetingInput.Value)
+end)
+```
+
+---
+
+## Example for Dropdown
+
+```lua
+LeftGroupBox:AddDropdown('WeaponDropdown', {
+    Values = { 'Sword', 'Bow', 'Staff' },
+    Default = 1
+    -- No Callback here!
+})
+
+Options.WeaponDropdown:OnChanged(function()
+    EquipWeapon(Options.WeaponDropdown.Value)
+end)
+```
+
+---
+
+## Example for Color Picker
+
+```lua
+LeftGroupBox:AddLabel('Highlight Color'):AddColorPicker('HighlightColor', {
+    Default = Color3.new(1, 1, 1)
+    -- No Callback here!
+})
+
+Options.HighlightColor:OnChanged(function()
+    SetHighlightColor(Options.HighlightColor.Value)
+end)
+```
+
+---
+
+## Example for Key Picker
+
+```lua
+LeftGroupBox:AddLabel('Fly Key'):AddKeyPicker('FlyKey', {
+    Default = 'F',
+    Mode = 'Toggle'
+    -- No Callback here!
+})
+
+Options.FlyKey:OnClick(function()
+    if Options.FlyKey:GetState() then
+        EnableFly()
+    else
+        DisableFly()
+    end
+end)
+
+Options.FlyKey:OnChanged(function()
+    print('FlyKey changed to:', Options.FlyKey.Value)
+end)
+```
+
+---
+
+**Summary:**  
+- Use `Toggles.ToggleName:OnChanged(function() ... end)` for toggles.
+- Use `Options.OptionName:OnChanged(function() ... end)` for sliders, inputs, dropdowns, color pickers, key pickers.
+- This approach keeps UI and logic separate, making scripts easier to maintain and update.
