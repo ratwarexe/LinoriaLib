@@ -1,0 +1,413 @@
+# LinoriaLib Plugin Guide: Feature Explanations, Templates, Examples, and Best Practices
+
+This guide provides:
+- **Feature explanations** for all major LinoriaLib UI elements.
+- **Plugin templates** showing how to modularize each feature.
+- **Example usage** for each feature.
+- **Best practice:** Using `Toggles/Options.INDEX:OnChanged(function(Value) ... end)` instead of inline `Callback`.
+
+---
+
+## 1. **Toggle**
+### **Explanation**
+A switch to enable/disable a feature.
+### **Plugin Template**
+```lua
+-- toggles.lua
+return function(GroupBox)
+    GroupBox:AddToggle('ExampleToggle', {
+        Text = 'Enable Feature',
+        Default = false
+        -- No Callback!
+    })
+end
+```
+### **Example Usage**
+```lua
+-- main.lua
+local plugin = require('toggles')
+plugin(LeftGroupBox)
+
+Toggles.ExampleToggle:OnChanged(function()
+    if Toggles.ExampleToggle.Value then
+        EnableFeature()
+    else
+        DisableFeature()
+    end
+end)
+```
+
+---
+
+## 2. **Button**
+### **Explanation**
+Executes an action when clicked.
+### **Plugin Template**
+```lua
+-- buttons.lua
+return function(GroupBox)
+    GroupBox:AddButton({
+        Text = 'Do Action',
+        -- No Func!
+    })
+end
+```
+### **Example Usage**
+```lua
+-- main.lua
+local plugin = require('buttons')
+local btn = plugin(LeftGroupBox)
+
+btn:OnClick(function()
+    DoAction()
+end)
+```
+
+---
+
+## 3. **Slider**
+### **Explanation**
+Select a numeric value.
+### **Plugin Template**
+```lua
+-- sliders.lua
+return function(GroupBox)
+    GroupBox:AddSlider('ExampleSlider', {
+        Text = 'Adjust Value',
+        Default = 10,
+        Min = 1,
+        Max = 100,
+        Rounding = 0
+        -- No Callback!
+    })
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('sliders')
+plugin(LeftGroupBox)
+
+Options.ExampleSlider:OnChanged(function()
+    SetValue(Options.ExampleSlider.Value)
+end)
+```
+
+---
+
+## 4. **Input (Textbox)**
+### **Explanation**
+Get text from user.
+### **Plugin Template**
+```lua
+-- inputs.lua
+return function(GroupBox)
+    GroupBox:AddInput('ExampleInput', {
+        Text = 'Enter text',
+        Default = '',
+        -- No Callback!
+    })
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('inputs')
+plugin(LeftGroupBox)
+
+Options.ExampleInput:OnChanged(function()
+    print('User entered:', Options.ExampleInput.Value)
+end)
+```
+
+---
+
+## 5. **Dropdown**
+### **Explanation**
+Select one or more options.
+### **Plugin Template**
+```lua
+-- dropdowns.lua
+return function(GroupBox)
+    GroupBox:AddDropdown('ExampleDropdown', {
+        Values = {'Option1', 'Option2', 'Option3'},
+        Default = 1,
+        Multi = false,
+        -- No Callback!
+    })
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('dropdowns')
+plugin(LeftGroupBox)
+
+Options.ExampleDropdown:OnChanged(function()
+    print('Selected:', Options.ExampleDropdown.Value)
+end)
+```
+
+---
+
+## 6. **Multi Dropdown**
+### **Explanation**
+Select multiple options.
+### **Plugin Template**
+```lua
+-- multidropdowns.lua
+return function(GroupBox)
+    GroupBox:AddDropdown('ExampleMultiDropdown', {
+        Values = {'A','B','C'},
+        Multi = true,
+        Default = 1,
+        -- No Callback!
+    })
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('multidropdowns')
+plugin(LeftGroupBox)
+
+Options.ExampleMultiDropdown:OnChanged(function()
+    for k, v in pairs(Options.ExampleMultiDropdown.Value) do
+        if v then Activate(k) end
+    end
+end)
+```
+
+---
+
+## 7. **Color Picker**
+### **Explanation**
+Pick a color.
+### **Plugin Template**
+```lua
+-- colorpickers.lua
+return function(GroupBox)
+    GroupBox:AddLabel('Pick a Color'):AddColorPicker('ExampleColor', {
+        Default = Color3.new(1,0,0),
+        -- No Callback!
+    })
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('colorpickers')
+plugin(LeftGroupBox)
+
+Options.ExampleColor:OnChanged(function()
+    SetColor(Options.ExampleColor.Value)
+end)
+```
+
+---
+
+## 8. **Key Picker**
+### **Explanation**
+Bind a key to an action.
+### **Plugin Template**
+```lua
+-- keypickers.lua
+return function(GroupBox)
+    GroupBox:AddLabel('Bind Key'):AddKeyPicker('ExampleKey', {
+        Default = 'F',
+        Mode = 'Toggle',
+        -- No Callback!
+    })
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('keypickers')
+plugin(LeftGroupBox)
+
+Options.ExampleKey:OnClick(function()
+    if Options.ExampleKey:GetState() then
+        EnableFeature()
+    else
+        DisableFeature()
+    end
+end)
+Options.ExampleKey:OnChanged(function()
+    print('Keybind changed:', Options.ExampleKey.Value)
+end)
+```
+
+---
+
+## 9. **Label/Divider**
+### **Explanation**
+Display static or wrapping text/divider.
+### **Plugin Template**
+```lua
+-- labels.lua
+return function(GroupBox)
+    GroupBox:AddLabel('Status: Ready')
+    GroupBox:AddDivider()
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('labels')
+plugin(LeftGroupBox)
+-- Use returned label object to update text if needed
+```
+
+---
+
+## 10. **Dependency Box**
+### **Explanation**
+Show/hide controls based on another UI element's state.
+### **Plugin Template**
+```lua
+-- dependencyboxes.lua
+return function(GroupBox)
+    GroupBox:AddToggle('DepToggle', { Text = 'Show Sub Options' })
+    local DepBox = GroupBox:AddDependencyBox()
+    DepBox:AddSlider('DepSlider', { Text = 'Sub Value', Default = 5, Min = 1, Max = 10 })
+    DepBox:SetupDependencies({ {Toggles.DepToggle, true} })
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('dependencyboxes')
+plugin(RightGroupBox)
+-- Use OnChanged on Toggles/Options as usual
+Options.DepSlider:OnChanged(function()
+    print('DepSlider value:', Options.DepSlider.Value)
+end)
+```
+
+---
+
+## 11. **ThemeManager/SaveManager**
+### **Explanation**
+Theme and config management. Usually setup once for the whole menu.
+### **Plugin Template**
+```lua
+-- theming.lua
+return function(Library, Tabs)
+    ThemeManager:SetLibrary(Library)
+    ThemeManager:ApplyToTab(Tabs.Settings)
+end
+
+-- saving.lua
+return function(Library, Tabs)
+    SaveManager:SetLibrary(Library)
+    SaveManager:BuildConfigSection(Tabs.Settings)
+end
+```
+### **Example Usage**
+```lua
+local themePlugin = require('theming')
+local savePlugin = require('saving')
+themePlugin(Library, Tabs)
+savePlugin(Library, Tabs)
+```
+
+---
+
+## 12. **Watermark**
+### **Explanation**
+Show status text, FPS, etc.
+### **Plugin Template**
+```lua
+-- watermark.lua
+return function(Library)
+    Library:SetWatermarkVisibility(true)
+    Library:SetWatermark('Plugin Loaded')
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('watermark')
+plugin(Library)
+```
+
+---
+
+## 13. **Menu Keybind**
+### **Explanation**
+Custom key to toggle menu.
+### **Plugin Template**
+```lua
+-- menukeybind.lua
+return function(GroupBox)
+    GroupBox:AddLabel('Menu Bind'):AddKeyPicker('MenuKey', {
+        Default = 'End',
+        NoUI = true,
+        Text = 'Menu Key'
+    })
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('menukeybind')
+plugin(MenuGroup)
+Library.ToggleKeybind = Options.MenuKey
+```
+
+---
+
+## 14. **Unload/Cleanup**
+### **Explanation**
+Button to unload the menu/script.
+### **Plugin Template**
+```lua
+-- unload.lua
+return function(GroupBox, Library)
+    GroupBox:AddButton('Unload', function()
+        Library:Unload()
+    end)
+end
+```
+### **Example Usage**
+```lua
+local plugin = require('unload')
+plugin(MenuGroup, Library)
+Library:OnUnload(function()
+    print('Unloaded!')
+end)
+```
+
+---
+
+## **Best Practice: Always Use `:OnChanged` for Logic**
+- **Create UI elements first in plugin files**
+- **Bind logic later in main script using `:OnChanged`**
+- Keeps UI and logic code cleanly separated, easy to maintain.
+
+---
+
+**To build a modular plugin system:**
+1. Create a file for each feature as shown above.
+2. Each file exports a function that takes a GroupBox (or other UI container).
+3. In your main script, require and call these plugins, then attach logic with `:OnChanged`.
+
+---
+
+**Example Main Script Structure:**
+```lua
+local plugins = {
+    require('toggles'),
+    require('buttons'),
+    require('sliders'),
+    require('inputs'),
+    require('dropdowns'),
+    require('colorpickers'),
+    require('keypickers'),
+    require('labels'),
+    require('dependencyboxes'),
+    require('menukeybind'),
+    require('unload')
+}
+for _, plugin in ipairs(plugins) do
+    plugin(LeftGroupBox, Library)
+end
+
+-- Now bind all logic using :OnChanged as shown above!
+```
+
+---
+
+**Summary:**  
+Use plugin files for UI construction, `:OnChanged` for logic, and keep your code modular and maintainable!
