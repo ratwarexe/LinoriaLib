@@ -104,3 +104,296 @@ This script is a showcase of LinoriaLib's UI framework for Roblox, demonstrating
 
 **Summary:**  
 This example demonstrates how LinoriaLib lets you build advanced, interactive, and modular UIs for Roblox scripts, with strong support for user customization, config management, and extensible UI logic.
+
+
+
+
+
+
+
+
+
+
+
+*****************
+# LinoriaLib Example Features – Triggering Scripts via GUI
+
+Here’s a breakdown of each major LinoriaLib UI feature shown in `Example.lua`, **with example code snippets** and explanations for how to trigger scripts/actions based on user interaction.
+
+---
+
+## 1. **Toggle**
+**Purpose:** Switch something on/off (feature, setting, etc.)
+
+```lua
+LeftGroupBox:AddToggle('AutoFarmToggle', {
+  Text = 'Enable Auto Farm',
+  Default = false,
+  Callback = function(value)
+    if value then
+      startAutoFarm() -- Call your script function
+    else
+      stopAutoFarm()
+    end
+  end
+})
+
+-- Or recommended:
+Toggles.AutoFarmToggle:OnChanged(function()
+  if Toggles.AutoFarmToggle.Value then
+    startAutoFarm()
+  else
+    stopAutoFarm()
+  end
+end)
+```
+
+---
+
+## 2. **Button**
+**Purpose:** Run an action once when clicked.
+
+```lua
+LeftGroupBox:AddButton({
+  Text = 'Teleport to Safe Zone',
+  Func = function()
+    teleportToSafeZone() -- Script function
+  end
+})
+```
+
+---
+
+## 3. **Slider**
+**Purpose:** Set a number value, e.g., speed, volume.
+
+```lua
+LeftGroupBox:AddSlider('WalkSpeedSlider', {
+  Text = 'Player Speed',
+  Default = 16,
+  Min = 5,
+  Max = 50,
+  Rounding = 0,
+  Callback = function(val)
+    setPlayerSpeed(val)
+  end
+})
+
+Options.WalkSpeedSlider:OnChanged(function()
+  setPlayerSpeed(Options.WalkSpeedSlider.Value)
+end)
+```
+
+---
+
+## 4. **Input (Textbox)**
+**Purpose:** Get user text input.
+
+```lua
+LeftGroupBox:AddInput('CustomMessage', {
+  Text = 'Message to Send',
+  Default = '',
+  Callback = function(msg)
+    sendChatMessage(msg)
+  end
+})
+
+Options.CustomMessage:OnChanged(function()
+  sendChatMessage(Options.CustomMessage.Value)
+end)
+```
+
+---
+
+## 5. **Dropdown (Single or Multi)**
+**Purpose:** Let user choose (single/multiple) options.
+
+```lua
+LeftGroupBox:AddDropdown('WeaponDropdown', {
+  Values = { 'Sword', 'Bow', 'Magic' },
+  Default = 1,
+  Text = 'Choose Weapon',
+  Callback = function(weapon)
+    equipWeapon(weapon)
+  end
+})
+
+Options.WeaponDropdown:OnChanged(function()
+  equipWeapon(Options.WeaponDropdown.Value)
+end)
+```
+
+**Multi Dropdown:**
+```lua
+LeftGroupBox:AddDropdown('SkillsDropdown', {
+  Values = { 'Dash', 'Block', 'Heal' },
+  Multi = true,
+  Default = 1,
+  Callback = function(skills)
+    activateSkills(skills)
+  end
+})
+
+Options.SkillsDropdown:OnChanged(function()
+  for skill, enabled in next, Options.SkillsDropdown.Value do
+    if enabled then
+      activateSkill(skill)
+    else
+      deactivateSkill(skill)
+    end
+  end
+end)
+```
+
+---
+
+## 6. **Color Picker**
+**Purpose:** Choose a color (for ESP, highlights, etc.)
+
+```lua
+LeftGroupBox:AddLabel('ESP Color'):AddColorPicker('ESPColor', {
+  Default = Color3.new(1, 0, 0),
+  Callback = function(color)
+    setESPColor(color)
+  end
+})
+
+Options.ESPColor:OnChanged(function()
+  setESPColor(Options.ESPColor.Value)
+end)
+```
+
+---
+
+## 7. **Key Picker**
+**Purpose:** Bind a key to trigger an action.
+
+```lua
+LeftGroupBox:AddLabel('Fly Key'):AddKeyPicker('FlyKey', {
+  Default = 'F',
+  Mode = 'Toggle',
+  Text = 'Fly Toggle Key',
+  Callback = function(state)
+    if state then
+      enableFly()
+    else
+      disableFly()
+    end
+  end
+})
+
+Options.FlyKey:OnClick(function()
+  if Options.FlyKey:GetState() then
+    enableFly()
+  else
+    disableFly()
+  end
+end)
+```
+
+---
+
+## 8. **Labels and Dividers**
+**Purpose:** UI organization – not interactive, but can update label text dynamically.
+
+```lua
+local statusLabel = LeftGroupBox:AddLabel('Status: Not running')
+function updateStatus(text)
+  statusLabel:SetText('Status: ' .. text)
+end
+```
+
+---
+
+## 9. **Dependency Boxes**
+**Purpose:** Show/hide controls based on another toggle.
+
+```lua
+RightGroupbox:AddToggle('AdvancedToggle', { Text = 'Show Advanced Options' })
+local DepBox = RightGroupbox:AddDependencyBox()
+DepBox:AddSlider('AdvancedSlider', { Text = 'Advanced Value', Default = 10, Min = 1, Max = 100 })
+
+DepBox:SetupDependencies({
+  { Toggles.AdvancedToggle, true } -- Only show if toggle is ON
+})
+```
+
+---
+
+## 10. **ThemeManager/SaveManager**
+**Purpose:** Saving/loading configs and themes (not script triggers, but useful for persistent settings).
+
+```lua
+ThemeManager:SetLibrary(Library)
+ThemeManager:ApplyToTab(Tabs['UI Settings'])
+
+SaveManager:SetLibrary(Library)
+SaveManager:BuildConfigSection(Tabs['UI Settings'])
+-- Settings are loaded/saved automatically
+```
+
+---
+
+## 11. **Watermark and FPS/Ping Display**
+**Purpose:** Status info, can be updated dynamically.
+
+```lua
+Library:SetWatermark('My Script | Ready')
+```
+
+---
+
+## 12. **Menu Keybind**
+**Purpose:** Show/hide the menu.
+
+```lua
+MenuGroup:AddLabel('Menu bind'):AddKeyPicker('MenuKeybind', { Default = 'End', NoUI = true })
+Library.ToggleKeybind = Options.MenuKeybind
+```
+
+---
+
+## 13. **Unloading/Cleanup**
+**Purpose:** Unload script/clean up.
+
+```lua
+MenuGroup:AddButton('Unload', function()
+  Library:Unload()
+end)
+
+Library:OnUnload(function()
+  cleanupScript()
+end)
+```
+
+---
+
+### How to Trigger Scripts
+
+- **Use the `Callback` property in the UI element, or the recommended `:OnChanged`/`:OnClick` methods.**
+- These are called **when the user interacts with the UI** (e.g., toggles a switch, moves a slider, enters text, picks a key).
+- Inside these callbacks, call your script functions, start/stop features, or update values as needed.
+
+---
+
+**Summary Table**
+
+| Feature         | UI Code Example                        | Trigger Script Via          |
+|-----------------|---------------------------------------|----------------------------|
+| Toggle          | `AddToggle` / `:OnChanged`            | Start/stop features        |
+| Button          | `AddButton`                           | Run function on click      |
+| Slider          | `AddSlider` / `:OnChanged`            | Set values (speed, etc.)   |
+| Input           | `AddInput` / `:OnChanged`             | Send messages, codes       |
+| Dropdown        | `AddDropdown` / `:OnChanged`          | Equip/select options       |
+| Color Picker    | `AddColorPicker` / `:OnChanged`       | Set highlight/ESP color    |
+| Key Picker      | `AddKeyPicker` / `:OnClick`           | Keybind actions            |
+| Dependency Box  | `AddDependencyBox` / `SetupDependencies` | Show/hide UI               |
+| Theme/Save      | `ThemeManager` / `SaveManager`        | Save/load persistent state |
+| Watermark       | `SetWatermark`                        | Show status info           |
+| Unload          | `AddButton('Unload')`                 | Cleanup                    |
+
+---
+
+**Tip:**  
+Replace `startAutoFarm`, `teleportToSafeZone`, etc., with your actual script functions.  
+Use `:OnChanged`, `:OnClick`, and `Callback` as entry points for your script logic!
