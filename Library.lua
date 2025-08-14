@@ -513,77 +513,78 @@ do
             Image = 'rbxassetid://4155801252';
             Parent = SatVibMapInner;
         });
-
-        local CursorOuter = Library:Create('ImageLabel', {
-            AnchorPoint = Vector2.new(0.5, 0.5);
-            Size = UDim2.new(0, 6, 0, 6);
-            BackgroundTransparency = 1;
-            Image = 'http://www.roblox.com/asset/?id=9619665977';
-            ImageColor3 = Color3.fromRGB(0, 0, 0); -- border color
-            ZIndex = 19;
-            Parent = SatVibMap;
-        });
         
-        local CursorInner = Library:Create('ImageLabel', {
-            Size = UDim2.new(0, CursorOuter.Size.X.Offset - 2, 0, CursorOuter.Size.Y.Offset - 2);
-            Position = UDim2.new(0, 1, 0, 1);
-            BackgroundTransparency = 0; -- make inner visible
-            BackgroundColor3 = Color3.fromRGB(255, 130, 0); -- solid fill color
-            Image = ''; -- remove inner image so background shows
-            ZIndex = 20;
-            Parent = CursorOuter;
+        local CursorOuter = Library:Create('ImageLabel', {
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            Size = UDim2.new(0, 12, 0, 12), -- Increased size for visibility
+            BackgroundTransparency = 1,
+            Image = 'http://www.roblox.com/asset/?id=9619665977',
+            ImageColor3 = Color3.fromRGB(0, 0, 0), -- Border color (black)
+            ZIndex = 100, -- Higher ZIndex to ensure visibility
+            Parent = SatVibMap,
         })
-
+        
+        local CursorInner = Library:Create('Frame', { -- Changed from ImageLabel to Frame
+            Size = UDim2.new(0, CursorOuter.Size.X.Offset - 2, 0, CursorOuter.Size.Y.Offset - 2),
+            Position = UDim2.new(0, 1, 0, 1),
+            BackgroundTransparency = 0, -- Solid fill
+            BackgroundColor3 = Color3.fromRGB(255, 130, 0), -- Solid orange fill color
+            BorderSizePixel = 0, -- No border for inner frame
+            ZIndex = 101, -- Higher than CursorOuter to ensure visibility
+            Parent = CursorOuter,
+        })
+        
+        -- Rest of the provided code (unchanged)
         local HueSelectorOuter = Library:Create('Frame', {
-            BorderColor3 = Color3.new(0, 0, 0);
-            Position = UDim2.new(0, 208, 0, 25);
-            Size = UDim2.new(0, 15, 0, 200);
-            ZIndex = 17;
-            Parent = PickerFrameInner;
-        });
-
+            BorderColor3 = Color3.new(0, 0, 0),
+            Position = UDim2.new(0, 208, 0, 25),
+            Size = UDim2.new(0, 15, 0, 200),
+            ZIndex = 17,
+            Parent = PickerFrameInner,
+        })
+        
         local HueSelectorInner = Library:Create('Frame', {
-            BackgroundColor3 = Color3.new(1, 1, 1);
-            BorderSizePixel = 0;
-            Size = UDim2.new(1, 0, 1, 0);
-            ZIndex = 18;
-            Parent = HueSelectorOuter;
-        });
-
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BorderSizePixel = 0,
+            Size = UDim2.new(1, 0, 1, 0),
+            ZIndex = 18,
+            Parent = HueSelectorOuter,
+        })
+        
         local HueCursor = Library:Create('Frame', { 
-            BackgroundColor3 = Color3.new(1, 1, 1);
-            AnchorPoint = Vector2.new(0, 0.5);
-            BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, 0, 0, 1);
-            ZIndex = 18;
-            Parent = HueSelectorInner;
-        });
-
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            AnchorPoint = Vector2.new(0, 0.5),
+            BorderColor3 = Color3.new(0, 0, 0),
+            Size = UDim2.new(1, 0, 0, 1),
+            ZIndex = 18,
+            Parent = HueSelectorInner,
+        })
+        
         local HueBoxOuter = Library:Create('Frame', {
-            BorderColor3 = Color3.new(0, 0, 0);
+            BorderColor3 = Color3.new(0, 0, 0),
             Position = UDim2.fromOffset(4, 228),
             Size = UDim2.new(0.5, -6, 0, 20),
             ZIndex = 18,
-            Parent = PickerFrameInner;
-        });
-
+            Parent = PickerFrameInner,
+        })
+        
         local HueBoxInner = Library:Create('Frame', {
-            BackgroundColor3 = Library.MainColor;
-            BorderColor3 = Library.OutlineColor;
-            BorderMode = Enum.BorderMode.Inset;
-            Size = UDim2.new(1, 0, 1, 0);
+            BackgroundColor3 = Library.MainColor,
+            BorderColor3 = Library.OutlineColor,
+            BorderMode = Enum.BorderMode.Inset,
+            Size = UDim2.new(1, 0, 1, 0),
             ZIndex = 18,
-            Parent = HueBoxOuter;
-        });
-
+            Parent = HueBoxOuter,
+        })
+        
         Library:Create('UIGradient', {
             Color = ColorSequence.new({
                 ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
                 ColorSequenceKeypoint.new(1, Color3.fromRGB(212, 212, 212))
-            });
-            Rotation = 90;
-            Parent = HueBoxInner;
-        });
+            }),
+            Rotation = 90,
+            Parent = HueBoxInner,
+        })
 
         local HueBox = Library:Create('TextBox', {
             BackgroundTransparency = 1;
