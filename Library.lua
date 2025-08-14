@@ -519,7 +519,7 @@ do
             Size = UDim2.new(0, 6, 0, 6);
             BackgroundTransparency = 1;
             Image = 'http://www.roblox.com/asset/?id=9619665977';
-            ImageColor3 = Color3.fromRGB(0, 0, 0); -- outer outline color
+            ImageColor3 = Color3.fromRGB(0, 0, 0); -- border color
             ZIndex = 19;
             Parent = SatVibMap;
         });
@@ -527,13 +527,12 @@ do
         local CursorInner = Library:Create('ImageLabel', {
             Size = UDim2.new(0, CursorOuter.Size.X.Offset - 2, 0, CursorOuter.Size.Y.Offset - 2);
             Position = UDim2.new(0, 1, 0, 1);
-            BackgroundTransparency = 0; -- make it visible
-            BackgroundColor3 = Color3.fromRGB(255, 165, 0); -- fill color
-            Image = ''; -- remove the inner image so background color shows
+            BackgroundTransparency = 0; -- make inner visible
+            BackgroundColor3 = Color3.fromRGB(255, 130, 0); -- solid fill color
+            Image = ''; -- remove inner image so background shows
             ZIndex = 20;
             Parent = CursorOuter;
         })
-
 
         local HueSelectorOuter = Library:Create('Frame', {
             BorderColor3 = Color3.new(0, 0, 0);
