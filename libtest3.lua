@@ -15,7 +15,7 @@ local ScreenGui = Instance.new('ScreenGui');
 ProtectGui(ScreenGui);
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
-ScreenGui.Parent = CoreGui;
+ScreenGui.Parent = PlayerGui;
 
 local Toggles = {};
 local Options = {};
@@ -43,7 +43,7 @@ local Library = {
     DependencyBoxes = {};
 
     Signals = {};
-    ScreenGui = ScreenGui;
+     = ;
 };
 
 local RainbowStep = 0
@@ -197,7 +197,7 @@ function Library:AddToolTip(InfoStr, HoverInstance)
 
         Size = UDim2.fromOffset(X + 5, Y + 4),
         ZIndex = 100,
-        Parent = Library.ScreenGui,
+        Parent = Library.,
 
         Visible = false,
     })
@@ -391,14 +391,14 @@ function Library:Unload()
         Library.OnUnload()
     end
 
-    ScreenGui:Destroy()
+    :Destroy()
 end
 
 function Library:OnUnload(Callback)
     Library.OnUnload = Callback
 end
 
-Library:GiveSignal(ScreenGui.DescendantRemoving:Connect(function(Instance)
+Library:GiveSignal(.DescendantRemoving:Connect(function(Instance)
     if Library.RegistryMap[Instance] then
         Library:RemoveFromRegistry(Instance);
     end;
@@ -453,7 +453,7 @@ do
         });
 
         -- 1/16/23
-        -- Rewrote this to be placed inside the Library ScreenGui
+        -- Rewrote this to be placed inside the Library 
         -- There was some issue which caused RelativeOffset to be way off
         -- Thus the color picker would never show
 
@@ -674,7 +674,7 @@ do
                 ZIndex = 14,
 
                 Visible = false,
-                Parent = ScreenGui
+                Parent = 
             })
 
             ContextMenu.Inner = Library:Create('Frame', {
@@ -897,44 +897,60 @@ do
             ColorPicker:Display();
         end;
 
-        SatVibMap.InputBegan:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-                while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                    local MinX = SatVibMap.AbsolutePosition.X;
-                    local MaxX = MinX + SatVibMap.AbsoluteSize.X;
-                    local MouseX = math.clamp(Mouse.X, MinX, MaxX);
+        SatVibMap.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                local moveConn
+                local releaseConn
+        
+                -- Update while mouse moves
+                moveConn = InputService.InputChanged:Connect(function(moveInput)
+                    if moveInput.UserInputType == Enum.UserInputType.MouseMovement then
+                        local MinX, MaxX = SatVibMap.AbsolutePosition.X, SatVibMap.AbsolutePosition.X + SatVibMap.AbsoluteSize.X
+                        local MinY, MaxY = SatVibMap.AbsolutePosition.Y, SatVibMap.AbsolutePosition.Y + SatVibMap.AbsoluteSize.Y
+                        local MouseX, MouseY = math.clamp(Mouse.X, MinX, MaxX), math.clamp(Mouse.Y, MinY, MaxY)
+        
+                        Picker.Sat = (MouseX - MinX) / (MaxX - MinX)
+                        Picker.Vib = 1 - ((MouseY - MinY) / (MaxY - MinY))
+                        Picker:Display()
+                    end
+                end)
+        
+                -- Disconnect on release
+                releaseConn = InputService.InputEnded:Connect(function(endInput)
+                    if endInput.UserInputType == Enum.UserInputType.MouseButton1 then
+                        if moveConn then moveConn:Disconnect() end
+                        if releaseConn then releaseConn:Disconnect() end
+                        Library:AttemptSave()
+                    end
+                end)
+            end
+        end)
 
-                    local MinY = SatVibMap.AbsolutePosition.Y;
-                    local MaxY = MinY + SatVibMap.AbsoluteSize.Y;
-                    local MouseY = math.clamp(Mouse.Y, MinY, MaxY);
+        HueSelectorInner.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                local moveConn
+                local releaseConn
+        
+                moveConn = InputService.InputChanged:Connect(function(moveInput)
+                    if moveInput.UserInputType == Enum.UserInputType.MouseMovement then
+                        local MinY, MaxY = HueSelectorInner.AbsolutePosition.Y, HueSelectorInner.AbsolutePosition.Y + HueSelectorInner.AbsoluteSize.Y
+                        local MouseY = math.clamp(Mouse.Y, MinY, MaxY)
+        
+                        Picker.Hue = (MouseY - MinY) / (MaxY - MinY)
+                        Picker:Display()
+                    end
+                end)
+        
+                releaseConn = InputService.InputEnded:Connect(function(endInput)
+                    if endInput.UserInputType == Enum.UserInputType.MouseButton1 then
+                        if moveConn then moveConn:Disconnect() end
+                        if releaseConn then releaseConn:Disconnect() end
+                        Library:AttemptSave()
+                    end
+                end)
+            end
+        end)
 
-                    ColorPicker.Sat = (MouseX - MinX) / (MaxX - MinX);
-                    ColorPicker.Vib = 1 - ((MouseY - MinY) / (MaxY - MinY));
-                    ColorPicker:Display();
-
-                    RenderStepped:Wait();
-                end;
-
-                Library:AttemptSave();
-            end;
-        end);
-
-        HueSelectorInner.InputBegan:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-                while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                    local MinY = HueSelectorInner.AbsolutePosition.Y;
-                    local MaxY = MinY + HueSelectorInner.AbsoluteSize.Y;
-                    local MouseY = math.clamp(Mouse.Y, MinY, MaxY);
-
-                    ColorPicker.Hue = ((MouseY - MinY) / (MaxY - MinY));
-                    ColorPicker:Display();
-
-                    RenderStepped:Wait();
-                end;
-
-                Library:AttemptSave();
-            end;
-        end);
 
         DisplayFrame.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
@@ -949,26 +965,33 @@ do
                 ColorPicker:Hide()
             end
         end);
-
         if TransparencyBoxInner then
-            TransparencyBoxInner.InputBegan:Connect(function(Input)
-                if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                        local MinX = TransparencyBoxInner.AbsolutePosition.X;
-                        local MaxX = MinX + TransparencyBoxInner.AbsoluteSize.X;
-                        local MouseX = math.clamp(Mouse.X, MinX, MaxX);
+            TransparencyBoxInner.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    local moveConn
+                    local releaseConn
+        
+                    moveConn = InputService.InputChanged:Connect(function(moveInput)
+                        if moveInput.UserInputType == Enum.UserInputType.MouseMovement then
+                            local MinX, MaxX = TransparencyBoxInner.AbsolutePosition.X, TransparencyBoxInner.AbsolutePosition.X + TransparencyBoxInner.AbsoluteSize.X
+                            local MouseX = math.clamp(Mouse.X, MinX, MaxX)
+        
+                            Picker.Transparency = 1 - ((MouseX - MinX) / (MaxX - MinX))
+                            Picker:Display()
+                        end
+                    end)
+        
+                    releaseConn = InputService.InputEnded:Connect(function(endInput)
+                        if endInput.UserInputType == Enum.UserInputType.MouseButton1 then
+                            if moveConn then moveConn:Disconnect() end
+                            if releaseConn then releaseConn:Disconnect() end
+                            Library:AttemptSave()
+                        end
+                    end)
+                end
+            end)
+        end
 
-                        ColorPicker.Transparency = 1 - ((MouseX - MinX) / (MaxX - MinX));
-
-                        ColorPicker:Display();
-
-                        RenderStepped:Wait();
-                    end;
-
-                    Library:AttemptSave();
-                end;
-            end);
-        end;
 
         Library:GiveSignal(InputService.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
