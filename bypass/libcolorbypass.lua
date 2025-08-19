@@ -409,33 +409,33 @@ local BaseAddons = {};
 do
     local Funcs = {};
 
-    function Funcs:AddColorPicker(Idx, Info)
+    function Funcs:AddDropper(Idx, Info)
         local ToggleLabel = self.TextLabel;
         -- local Container = self.Container;
 
-        assert(Info.Default, 'AddColorPicker: Missing default value.');
+        assert(Info.Default, 'AddDropper: Missing default value.');
 
-        local ColorPicker = {
+        local Dropper = {
             Value = Info.Default;
             Transparency = Info.Transparency or 0;
-            Type = 'ColorPicker';
+            Type = 'Dropper';
             Title = type(Info.Title) == 'string' and Info.Title or 'Color picker',
             Callback = Info.Callback or function(Color) end;
         };
 
-        function ColorPicker:SetHSVFromRGB(Color)
+        function Dropper:SetHSVFromRGB(Color)
             local H, S, V = Color3.toHSV(Color);
 
-            ColorPicker.Hue = H;
-            ColorPicker.Sat = S;
-            ColorPicker.Vib = V;
+            Dropper.Hue = H;
+            Dropper.Sat = S;
+            Dropper.Vib = V;
         end;
 
-        ColorPicker:SetHSVFromRGB(ColorPicker.Value);
+        Dropper:SetHSVFromRGB(Dropper.Value);
 
         local DisplayFrame = Library:Create('Frame', {
-            BackgroundColor3 = ColorPicker.Value;
-            BorderColor3 = Library:GetDarkerColor(ColorPicker.Value);
+            BackgroundColor3 = Dropper.Value;
+            BorderColor3 = Library:GetDarkerColor(Dropper.Value);
             BorderMode = Enum.BorderMode.Inset;
             Size = UDim2.new(0, 28, 0, 14);
             ZIndex = 6;
@@ -626,7 +626,7 @@ do
             });
 
             TransparencyBoxInner = Library:Create('Frame', {
-                BackgroundColor3 = ColorPicker.Value;
+                BackgroundColor3 = Dropper.Value;
                 BorderColor3 = Library.OutlineColor;
                 BorderMode = Enum.BorderMode.Inset;
                 Size = UDim2.new(1, 0, 1, 0);
@@ -659,7 +659,7 @@ do
             Position = UDim2.fromOffset(5, 5);
             TextXAlignment = Enum.TextXAlignment.Left;
             TextSize = 14;
-            Text = ColorPicker.Title,--Info.Default;
+            Text = Dropper.Title,--Info.Default;
             TextWrapped = false;
             ZIndex = 16;
             Parent = PickerFrameInner;
@@ -769,7 +769,7 @@ do
             end
 
             ContextMenu:AddOption('Copy color', function()
-                Library.ColorClipboard = ColorPicker.Value
+                Library.ColorClipboard = Dropper.Value
                 Library:Notify('Copied color!', 2)
             end)
 
@@ -777,17 +777,17 @@ do
                 if not Library.ColorClipboard then
                     return Library:Notify('You have not copied a color!', 2)
                 end
-                ColorPicker:SetValueRGB(Library.ColorClipboard)
+                Dropper:SetValueRGB(Library.ColorClipboard)
             end)
 
 
             ContextMenu:AddOption('Copy HEX', function()
-                pcall(setclipboard, ColorPicker.Value:ToHex())
+                pcall(setclipboard, Dropper.Value:ToHex())
                 Library:Notify('Copied hex code to clipboard!', 2)
             end)
 
             ContextMenu:AddOption('Copy RGB', function()
-                pcall(setclipboard, table.concat({ math.floor(ColorPicker.Value.R * 255), math.floor(ColorPicker.Value.G * 255), math.floor(ColorPicker.Value.B * 255) }, ', '))
+                pcall(setclipboard, table.concat({ math.floor(Dropper.Value.R * 255), math.floor(Dropper.Value.G * 255), math.floor(Dropper.Value.B * 255) }, ', '))
                 Library:Notify('Copied RGB values to clipboard!', 2)
             end)
 
@@ -818,55 +818,55 @@ do
             if enter then
                 local success, result = pcall(Color3.fromHex, HueBox.Text)
                 if success and typeof(result) == 'Color3' then
-                    ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib = Color3.toHSV(result)
+                    Dropper.Hue, Dropper.Sat, Dropper.Vib = Color3.toHSV(result)
                 end
             end
 
-            ColorPicker:Display()
+            Dropper:Display()
         end)
 
         RgbBox.FocusLost:Connect(function(enter)
             if enter then
                 local r, g, b = RgbBox.Text:match('(%d+),%s*(%d+),%s*(%d+)')
                 if r and g and b then
-                    ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib = Color3.toHSV(Color3.fromRGB(r, g, b))
+                    Dropper.Hue, Dropper.Sat, Dropper.Vib = Color3.toHSV(Color3.fromRGB(r, g, b))
                 end
             end
 
-            ColorPicker:Display()
+            Dropper:Display()
         end)
 
-        function ColorPicker:Display()
-            ColorPicker.Value = Color3.fromHSV(ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib);
-            SatVibMap.BackgroundColor3 = Color3.fromHSV(ColorPicker.Hue, 1, 1);
+        function Dropper:Display()
+            Dropper.Value = Color3.fromHSV(Dropper.Hue, Dropper.Sat, Dropper.Vib);
+            SatVibMap.BackgroundColor3 = Color3.fromHSV(Dropper.Hue, 1, 1);
 
             Library:Create(DisplayFrame, {
-                BackgroundColor3 = ColorPicker.Value;
-                BackgroundTransparency = ColorPicker.Transparency;
-                BorderColor3 = Library:GetDarkerColor(ColorPicker.Value);
+                BackgroundColor3 = Dropper.Value;
+                BackgroundTransparency = Dropper.Transparency;
+                BorderColor3 = Library:GetDarkerColor(Dropper.Value);
             });
 
             if TransparencyBoxInner then
-                TransparencyBoxInner.BackgroundColor3 = ColorPicker.Value;
-                TransparencyCursor.Position = UDim2.new(1 - ColorPicker.Transparency, 0, 0, 0);
+                TransparencyBoxInner.BackgroundColor3 = Dropper.Value;
+                TransparencyCursor.Position = UDim2.new(1 - Dropper.Transparency, 0, 0, 0);
             end;
 
-            CursorOuter.Position = UDim2.new(ColorPicker.Sat, 0, 1 - ColorPicker.Vib, 0);
-            HueCursor.Position = UDim2.new(0, 0, ColorPicker.Hue, 0);
+            CursorOuter.Position = UDim2.new(Dropper.Sat, 0, 1 - Dropper.Vib, 0);
+            HueCursor.Position = UDim2.new(0, 0, Dropper.Hue, 0);
 
-            HueBox.Text = '#' .. ColorPicker.Value:ToHex()
-            RgbBox.Text = table.concat({ math.floor(ColorPicker.Value.R * 255), math.floor(ColorPicker.Value.G * 255), math.floor(ColorPicker.Value.B * 255) }, ', ')
+            HueBox.Text = '#' .. Dropper.Value:ToHex()
+            RgbBox.Text = table.concat({ math.floor(Dropper.Value.R * 255), math.floor(Dropper.Value.G * 255), math.floor(Dropper.Value.B * 255) }, ', ')
 
-            Library:SafeCallback(ColorPicker.Callback, ColorPicker.Value);
-            Library:SafeCallback(ColorPicker.Changed, ColorPicker.Value);
+            Library:SafeCallback(Dropper.Callback, Dropper.Value);
+            Library:SafeCallback(Dropper.Changed, Dropper.Value);
         end;
 
-        function ColorPicker:OnChanged(Func)
-            ColorPicker.Changed = Func;
-            Func(ColorPicker.Value)
+        function Dropper:OnChanged(Func)
+            Dropper.Changed = Func;
+            Func(Dropper.Value)
         end;
 
-        function ColorPicker:Show()
+        function Dropper:Show()
             for Frame, Val in next, Library.OpenedFrames do
                 if Frame.Name == 'Color' then
                     Frame.Visible = false;
@@ -878,23 +878,23 @@ do
             Library.OpenedFrames[PickerFrameOuter] = true;
         end;
 
-        function ColorPicker:Hide()
+        function Dropper:Hide()
             PickerFrameOuter.Visible = false;
             Library.OpenedFrames[PickerFrameOuter] = nil;
         end;
 
-        function ColorPicker:SetValue(HSV, Transparency)
+        function Dropper:SetValue(HSV, Transparency)
             local Color = Color3.fromHSV(HSV[1], HSV[2], HSV[3]);
 
-            ColorPicker.Transparency = Transparency or 0;
-            ColorPicker:SetHSVFromRGB(Color);
-            ColorPicker:Display();
+            Dropper.Transparency = Transparency or 0;
+            Dropper:SetHSVFromRGB(Color);
+            Dropper:Display();
         end;
 
-        function ColorPicker:SetValueRGB(Color, Transparency)
-            ColorPicker.Transparency = Transparency or 0;
-            ColorPicker:SetHSVFromRGB(Color);
-            ColorPicker:Display();
+        function Dropper:SetValueRGB(Color, Transparency)
+            Dropper.Transparency = Transparency or 0;
+            Dropper:SetHSVFromRGB(Color);
+            Dropper:Display();
         end;
 
         SatVibMap.InputBegan:Connect(function(Input)
@@ -908,9 +908,9 @@ do
                     local MaxY = MinY + SatVibMap.AbsoluteSize.Y;
                     local MouseY = math.clamp(Mouse.Y, MinY, MaxY);
 
-                    ColorPicker.Sat = (MouseX - MinX) / (MaxX - MinX);
-                    ColorPicker.Vib = 1 - ((MouseY - MinY) / (MaxY - MinY));
-                    ColorPicker:Display();
+                    Dropper.Sat = (MouseX - MinX) / (MaxX - MinX);
+                    Dropper.Vib = 1 - ((MouseY - MinY) / (MaxY - MinY));
+                    Dropper:Display();
 
                     RenderStepped:Wait();
                 end;
@@ -926,8 +926,8 @@ do
                     local MaxY = MinY + HueSelectorInner.AbsoluteSize.Y;
                     local MouseY = math.clamp(Mouse.Y, MinY, MaxY);
 
-                    ColorPicker.Hue = ((MouseY - MinY) / (MaxY - MinY));
-                    ColorPicker:Display();
+                    Dropper.Hue = ((MouseY - MinY) / (MaxY - MinY));
+                    Dropper:Display();
 
                     RenderStepped:Wait();
                 end;
@@ -939,14 +939,14 @@ do
         DisplayFrame.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
                 if PickerFrameOuter.Visible then
-                    ColorPicker:Hide()
+                    Dropper:Hide()
                 else
                     ContextMenu:Hide()
-                    ColorPicker:Show()
+                    Dropper:Show()
                 end;
             elseif Input.UserInputType == Enum.UserInputType.MouseButton2 and not Library:MouseIsOverOpenedFrame() then
                 ContextMenu:Show()
-                ColorPicker:Hide()
+                Dropper:Hide()
             end
         end);
 
@@ -958,9 +958,9 @@ do
                         local MaxX = MinX + TransparencyBoxInner.AbsoluteSize.X;
                         local MouseX = math.clamp(Mouse.X, MinX, MaxX);
 
-                        ColorPicker.Transparency = 1 - ((MouseX - MinX) / (MaxX - MinX));
+                        Dropper.Transparency = 1 - ((MouseX - MinX) / (MaxX - MinX));
 
-                        ColorPicker:Display();
+                        Dropper:Display();
 
                         RenderStepped:Wait();
                     end;
@@ -977,7 +977,7 @@ do
                 if Mouse.X < AbsPos.X or Mouse.X > AbsPos.X + AbsSize.X
                     or Mouse.Y < (AbsPos.Y - 20 - 1) or Mouse.Y > AbsPos.Y + AbsSize.Y then
 
-                    ColorPicker:Hide();
+                    Dropper:Hide();
                 end;
 
                 if not Library:IsMouseOverFrame(ContextMenu.Container) then
@@ -992,10 +992,10 @@ do
             end
         end))
 
-        ColorPicker:Display();
-        ColorPicker.DisplayFrame = DisplayFrame
+        Dropper:Display();
+        Dropper.DisplayFrame = DisplayFrame
 
-        Options[Idx] = ColorPicker;
+        Options[Idx] = Dropper;
 
         return self;
     end;
